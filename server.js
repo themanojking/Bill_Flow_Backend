@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import productRoutes from "./routes/productRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import saleRoutes from "./routes/saleRoutes.js";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use(async (req, res, next) => {
 
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/sales", saleRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({
