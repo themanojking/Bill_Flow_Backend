@@ -90,4 +90,55 @@ const details = data.product;
   }
 });
 
+
+// Update product MRP
+router.patch("/:barcode/mrp", async (req, res) => {
+  try {
+    const { barcode } = req.params;
+    const { mrp } = req.body;
+
+    // Validate MRP
+    if (
+      mrp === undefined ||
+      mrp === null ||
+      mrp === "" ||
+      !Number.isFinite(Number(mrp)) ||
+      Number(mrp) <= 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter a valid MRP",
+      });
+    }
+
+    // Find product and update MRP
+    const product = await Product.findOneAndUpdate(
+      { barcode },
+      { $set: { mrp: Number(mrp) } },
+      { new: true, runValidators: true }
+    );
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "MRP updated successfully",
+      product,
+    });
+  } catch (error) {
+    console.error("MRP update error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to update MRP",
+    });
+  }
+});
+
+
 export default router;
