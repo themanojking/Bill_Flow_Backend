@@ -9,26 +9,32 @@ dotenv.config();
 
 const app = express();
 
+connectDB();
+
 app.use(cors());
 app.use(express.json());
+
+// Connect MongoDB before handling API requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+    });
+  }
+});
 
 app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Barcode Scanner API is running!"
+    message: "Barcode Scanner API is running!",
   });
 });
 
-const PORT = process.env.PORT || 5000;
-
-const startServer = async () => {
-  await connectDB();
-
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-};
-
-startServer();
+export default app;
